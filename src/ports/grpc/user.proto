@@ -1,0 +1,37 @@
+syntax = "proto3";
+
+package user;
+service UsersService {
+    rpc FindUserById (RequestUser) returns (ResponseUser) {}
+    rpc FindAllUsersByIds (RequestUserIds) returns (ResponseListUser) {}
+    rpc FindAllUser (RequestAllUser) returns (ResponseListUser) {}
+}
+
+message RequestUserIds {
+   repeated string user_ids = 1;
+}
+
+message RequestUserByCoordinate {
+   double latitude = 1;
+   double longitude = 2;
+   double radius = 3;
+}
+
+message RequestAllUser {
+   bool active = 1;
+}
+
+message ResponseListUser {
+   repeated ResponseUser data = 1;
+}
+
+message RequestUser {
+   string user_id = 1;
+}
+
+message ResponseUser {
+   string id = 1;
+   string name = 2;
+   string email = 3;
+   string document = 4;
+}

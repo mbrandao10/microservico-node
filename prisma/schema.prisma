@@ -1,0 +1,95 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../node_modules/.prisma/client"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+generator erd {
+  provider                  = "prisma-erd-generator"
+  output                    = "./ERD.svg"
+  theme                     = "dark"
+  includeRelationFromFields = true
+}
+
+model Users {
+  id                                String    @id @default(auto()) @map("_id") @db.ObjectId
+  name                              String
+  document_number                   String    @unique
+  email                             String    @unique
+  group_companies_ids               String[]  @default([])
+  password                          String
+  hash_recovery_password            String?   @unique
+  hash_verified_email               String?   @unique
+  verified_email                    Boolean   @default(false)
+  active                            Boolean   @default(true)
+  code_forget_password              String?
+  created_at_recovery_password_hash DateTime?
+  created_at                        DateTime  @default(now())
+  updated_at                        DateTime  @updatedAt
+  deleted                           Boolean   @default(false)
+}
+
+model Organizations {
+  id                String   @id @default(auto()) @map("_id") @db.ObjectId
+  name              String
+  contact_in_charge Json
+  active            Boolean  @default(true)
+  created_at        DateTime @default(now())
+  updated_at        DateTime @updatedAt
+  deleted           Boolean  @default(false)
+}
+
+enum TypeCategories {
+  PIZZA
+  FAMILY_MEALS
+  PREMIUM
+}
+
+model Companies {
+  id                String          @id @default(auto()) @map("_id") @db.ObjectId
+  organization_id   String          @db.ObjectId
+  company_logo      String?
+  company_name      String
+  trade_name        String
+  document_number   String          @unique
+  address           String?
+  contact_in_charge Json
+  services_ids      String[]        @default([])
+  categories        TypeCategories?
+  active            Boolean         @default(true)
+  created_at        DateTime        @default(now())
+  updated_at        DateTime        @updatedAt
+  deleted           Boolean         @default(false)
+}
+
+model GroupCompanies {
+  id              String   @id @default(auto()) @map("_id") @db.ObjectId
+  name            String
+  organization_id String   @db.ObjectId
+  company_ids     String[] @default([])
+  default         Boolean
+  active          Boolean  @default(true)
+  created_at      DateTime @default(now())
+  updated_at      DateTime @updatedAt
+  deleted         Boolean  @default(false)
+}
+
+enum ServicesType {
+TOTEM
+}
+
+model Services {
+  id                String          @id @default(auto()) @map("_id") @db.ObjectId
+  company_id        String          @db.ObjectId
+  name              String          @unique
+  type              ServicesType
+  availability      Json
+  active            Boolean         @default(true)
+  created_at        DateTime        @default(now())
+  updated_at        DateTime        @updatedAt
+  deleted           Boolean         @default(false)
+}
